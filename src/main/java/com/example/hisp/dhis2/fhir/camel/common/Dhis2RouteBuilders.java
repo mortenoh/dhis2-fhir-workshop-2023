@@ -32,9 +32,10 @@ import org.apache.camel.model.RouteDefinition;
 
 public class Dhis2RouteBuilders {
   private static final String OU_FIELDS =
-      "id,code,name,shortName,description,openingDate,parent[id]";
+      "id,code,created,lastUpdated,name,shortName,description,openingDate,parent[id]";
 
-  private static final String OS_FIELDS = "id,code,name,description,version,options[id,code,name]";
+  private static final String OS_FIELDS =
+      "id,code,created,lastUpdated,name,description,version,options[id,code,name]";
 
   private static final String OU_ITEM_TYPE = "org.hisp.dhis.api.model.v2_39_1.OrganisationUnit";
 

@@ -50,6 +50,7 @@ public class CodeSystemTypeConverter implements TypeConverters {
 
     CodeSystem codeSystem = new CodeSystem();
     codeSystem.setId(optionSet.getId().get());
+    codeSystem.getMeta().setLastUpdated(optionSet.getLastUpdated().get());
     codeSystem.setUrl(namespace + "/" + optionSet.getId() + "/codeSystem");
     codeSystem.setValueSet(namespace + "/" + optionSet.getId() + "/valueSet");
     codeSystem.setName(optionSet.getName().get());

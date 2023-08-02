@@ -49,6 +49,7 @@ public class ValueSetTypeConverter implements TypeConverters {
 
     ValueSet valueSet = new ValueSet();
     valueSet.setId(optionSet.getId().get());
+    valueSet.getMeta().setLastUpdated(optionSet.getLastUpdated().get());
     valueSet.setUrl(namespace + "/" + optionSet.getId() + "/valueSet");
     valueSet.setName(optionSet.getName().get());
     valueSet.setTitle(optionSet.getName().get());
