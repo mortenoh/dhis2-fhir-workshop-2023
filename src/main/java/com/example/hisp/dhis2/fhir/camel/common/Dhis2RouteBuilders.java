@@ -43,6 +43,7 @@ public class Dhis2RouteBuilders {
         Map.of(
             "fields", OU_FIELDS,
             "order", "level",
+            "filter", "level:le:2",
             "paging", "true");
 
     routeDefinition

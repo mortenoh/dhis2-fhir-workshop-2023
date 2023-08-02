@@ -31,23 +31,22 @@ import org.apache.camel.AggregationStrategy;
 import org.apache.camel.Exchange;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleType;
-import org.hl7.fhir.r4.model.Location;
+import org.hl7.fhir.r4.model.Resource;
 
 public class BundleAggregationStrategy implements AggregationStrategy {
   @Override
-  @SuppressWarnings("unchecked")
   public Exchange aggregate(Exchange oldExchange, Exchange newExchange) {
-    Location location = newExchange.getIn().getBody(Location.class);
+    Resource resource = newExchange.getIn().getBody(Resource.class);
 
     if (oldExchange == null) {
       Bundle bundle = new Bundle().setType(BundleType.SEARCHSET);
-      bundle.addEntry().setResource(location);
+      bundle.addEntry().setResource(resource);
       newExchange.getIn().setBody(bundle);
 
       return newExchange;
     } else {
       Bundle bundle = oldExchange.getIn().getBody(Bundle.class);
-      bundle.addEntry().setResource(location);
+      bundle.addEntry().setResource(resource);
 
       return oldExchange;
     }

@@ -27,8 +27,9 @@
  */
 package com.example.hisp.dhis2.fhir.camel.routes;
 
+import static com.example.hisp.dhis2.fhir.camel.common.Dhis2RouteBuilders.getOrganisationUnits;
+
 import com.example.hisp.dhis2.fhir.camel.common.BundleAggregationStrategy;
-import com.example.hisp.dhis2.fhir.camel.common.Dhis2RouteBuilders;
 import org.apache.camel.builder.RouteBuilder;
 import org.hl7.fhir.r4.model.Location;
 import org.springframework.http.MediaType;
@@ -39,7 +40,7 @@ public class LocationRoute extends RouteBuilder {
 
   @Override
   public void configure() throws Exception {
-    Dhis2RouteBuilders.getOrganisationUnits("read-dhis-ou")
+    getOrganisationUnits("get-fhir-locations")
         .split(body(), new BundleAggregationStrategy())
         .convertBodyTo(Location.class)
         .end()
@@ -49,6 +50,6 @@ public class LocationRoute extends RouteBuilder {
     rest("/")
         .get("/baseR4/Location")
         .produces(MediaType.APPLICATION_JSON_VALUE)
-        .to("direct:read-dhis-ou");
+        .to("direct:get-fhir-locations");
   }
 }
