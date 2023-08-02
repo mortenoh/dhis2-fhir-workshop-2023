@@ -55,7 +55,11 @@ public class ValueSetTypeConverter implements TypeConverters {
     valueSet.setTitle(optionSet.getName().get());
     // valueSet.setDescription( optionSet.getDescription() );
     valueSet.setStatus(Enumerations.PublicationStatus.ACTIVE);
-    valueSet.setVersion(String.valueOf(optionSet.getVersion().get()));
+
+    if (optionSet.getVersion().isPresent()) {
+      valueSet.setVersion(String.valueOf(optionSet.getVersion().get()));
+    }
+
     valueSet.setExperimental(false);
     valueSet.setImmutable(true);
 

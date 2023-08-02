@@ -58,7 +58,11 @@ public class CodeSystemTypeConverter implements TypeConverters {
     codeSystem.setPublisher(properties.getDhis2().getBaseUrl());
     codeSystem.setStatus(Enumerations.PublicationStatus.ACTIVE);
     codeSystem.setContent(CodeSystem.CodeSystemContentMode.COMPLETE);
-    codeSystem.setVersion(String.valueOf(optionSet.getVersion().get()));
+
+    if (optionSet.getVersion().isPresent()) {
+      codeSystem.setVersion(String.valueOf(optionSet.getVersion().get()));
+    }
+
     codeSystem.setExperimental(false);
     codeSystem.setCaseSensitive(true);
 
