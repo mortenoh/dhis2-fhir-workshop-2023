@@ -11,3 +11,11 @@ Compile the project or download the most recent war file (links under releases).
 ```shell
 $ mvn package
 ```
+
+## Running
+
+To run the project please do
+
+```shell
+$ mvn spring-boot:run
+```
