@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2022, University of Oslo
+ * Copyright (c) 2004-2023, University of Oslo
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -25,18 +25,30 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.example.dhis2.fhir.configuration;
+package com.example.hisp.dhis2.fhir.camel.routes;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotEmpty;
-import lombok.Data;
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import com.example.hisp.dhis2.fhir.camel.common.BundleAggregationStrategy;
+import com.example.hisp.dhis2.fhir.camel.common.Dhis2RouteBuilders;
+import org.apache.camel.builder.RouteBuilder;
+import org.hl7.fhir.r4.model.Location;
+import org.springframework.http.MediaType;
+import org.springframework.stereotype.Component;
 
-@Data
-@Valid
-@ConfigurationProperties(prefix = "dhis2")
-public class MainProperties {
-  @NotEmpty private Api source;
+@Component
+public class LocationRoute extends RouteBuilder {
 
-  @NotEmpty private Api target;
+  @Override
+  public void configure() throws Exception {
+    Dhis2RouteBuilders.getOrganisationUnits("read-dhis-ou")
+        .split(body(), new BundleAggregationStrategy())
+        .convertBodyTo(Location.class)
+        .end()
+        .marshal()
+        .fhirJson("R4");
+
+    rest("/")
+        .get("/baseR4/Location")
+        .produces(MediaType.APPLICATION_JSON_VALUE)
+        .to("direct:read-dhis-ou");
+  }
 }

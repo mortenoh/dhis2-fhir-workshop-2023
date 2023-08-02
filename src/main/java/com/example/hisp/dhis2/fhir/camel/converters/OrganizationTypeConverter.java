@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2022, University of Oslo
+ * Copyright (c) 2004-2023, University of Oslo
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -25,18 +25,47 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.example.dhis2.fhir.configuration;
+package com.example.hisp.dhis2.fhir.camel.converters;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotEmpty;
-import lombok.Data;
+import com.example.hisp.dhis2.fhir.configuration.MainProperties;
+import lombok.RequiredArgsConstructor;
+import org.apache.camel.Converter;
+import org.apache.camel.Exchange;
+import org.apache.camel.TypeConverters;
+import org.hisp.dhis.api.model.v2_39_1.OrganisationUnit;
+import org.hl7.fhir.r4.model.Identifier;
+import org.hl7.fhir.r4.model.Organization;
+import org.springframework.stereotype.Component;
 
-@Data
-@Valid
-public class Api {
-  @NotEmpty private String baseUrl;
+@Component
+@RequiredArgsConstructor
+public class OrganizationTypeConverter implements TypeConverters {
+  private final MainProperties properties;
 
-  private String username;
+  @Converter
+  public Organization toOrganization(OrganisationUnit ou, Exchange exchange) {
+    Organization organization = new Organization();
+    organization.setId(ou.getId().get());
+    organization.setName(ou.getName().get());
 
-  private String password;
+    String baseUrl = properties.getDhis2().getBaseUrl().replace("/api", "");
+
+    organization
+        .getIdentifier()
+        .add(
+            new Identifier()
+                .setSystem(baseUrl + "/api/organisationUnits/id")
+                .setValue(ou.getId().get()));
+
+    if (ou.getCode().isPresent()) {
+      organization
+          .getIdentifier()
+          .add(
+              new Identifier()
+                  .setSystem(baseUrl + "/api/organisationUnits/code")
+                  .setValue(ou.getCode().get()));
+    }
+
+    return organization;
+  }
 }

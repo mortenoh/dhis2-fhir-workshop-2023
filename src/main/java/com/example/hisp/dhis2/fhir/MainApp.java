@@ -25,12 +25,12 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.example.dhis2.fhir;
+package com.example.hisp.dhis2.fhir;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
-import com.example.dhis2.fhir.configuration.MainProperties;
+import com.example.hisp.dhis2.fhir.configuration.MainProperties;
 import javax.servlet.Servlet;
 import lombok.RequiredArgsConstructor;
 import org.apache.camel.component.servlet.CamelHttpTransportServlet;
@@ -44,7 +44,7 @@ import org.springframework.context.annotation.Bean;
 
 @SpringBootApplication
 @RequiredArgsConstructor
-@EnableConfigurationProperties({MainProperties.class})
+@EnableConfigurationProperties(MainProperties.class)
 public class MainApp {
   private final MainProperties properties;
 
@@ -63,9 +63,9 @@ public class MainApp {
   @Bean
   public Dhis2Client dhis2Client() {
     return Dhis2ClientBuilder.newClient(
-            properties.getSource().getBaseUrl(),
-            properties.getSource().getUsername(),
-            properties.getSource().getPassword())
+            properties.getDhis2().getBaseUrl(),
+            properties.getDhis2().getUsername(),
+            properties.getDhis2().getPassword())
         .build();
   }
 
@@ -76,6 +76,6 @@ public class MainApp {
 
   @Bean
   public IGenericClient fhirClient(FhirContext fhirContext) {
-    return fhirContext.newRestfulGenericClient(properties.getTarget().getBaseUrl());
+    return fhirContext.newRestfulGenericClient(properties.getFhir().getBaseUrl());
   }
 }
