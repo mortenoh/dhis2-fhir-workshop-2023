@@ -33,6 +33,8 @@ import org.apache.camel.Converter;
 import org.apache.camel.Exchange;
 import org.apache.camel.TypeConverters;
 import org.hisp.dhis.api.model.v2_39_1.OptionSet;
+import org.hl7.fhir.r4.model.Enumerations;
+import org.hl7.fhir.r4.model.Identifier;
 import org.hl7.fhir.r4.model.ValueSet;
 import org.springframework.stereotype.Component;
 
@@ -43,7 +45,34 @@ public class ValueSetTypeConverter implements TypeConverters {
 
   @Converter
   public ValueSet toValueSet(OptionSet optionSet, Exchange exchange) {
+    String namespace = properties.getDhis2().getBaseUrl() + "/api/optionSets";
+
     ValueSet valueSet = new ValueSet();
+    valueSet.setId(optionSet.getId().get());
+    valueSet.setUrl(namespace + "/" + optionSet.getId() + "/valueSet");
+    valueSet.setName(optionSet.getName().get());
+    valueSet.setTitle(optionSet.getName().get());
+    // valueSet.setDescription( optionSet.getDescription() );
+    valueSet.setStatus(Enumerations.PublicationStatus.ACTIVE);
+    valueSet.setVersion(String.valueOf(optionSet.getVersion()));
+    valueSet.setExperimental(false);
+    valueSet.setImmutable(true);
+
+    valueSet
+        .getIdentifier()
+        .add(new Identifier().setSystem(namespace).setValue(optionSet.getId().get()));
+
+    if (optionSet.getCode().isPresent()) {
+      valueSet
+          .getIdentifier()
+          .add(new Identifier().setSystem(namespace).setValue(optionSet.getCode().get()));
+    }
+
+    valueSet.setCompose(
+        new ValueSet.ValueSetComposeComponent()
+            .addInclude(
+                new ValueSet.ConceptSetComponent()
+                    .setSystem(namespace + "/" + optionSet.getId() + "/codeSystem")));
 
     return valueSet;
   }
