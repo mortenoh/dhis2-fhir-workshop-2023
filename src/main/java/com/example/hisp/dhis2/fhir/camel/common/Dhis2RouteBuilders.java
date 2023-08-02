@@ -36,9 +36,7 @@ public class Dhis2RouteBuilders {
 
   private static final String OU_ITEM_TYPE = "org.hisp.dhis.api.model.v2_39_1.OrganisationUnit";
 
-  public static RouteDefinition getOrganisationUnits(String uri) {
-    RouteDefinition routeDefinition = new RouteDefinition();
-
+  public static RouteDefinition getOrganisationUnits(RouteDefinition routeDefinition) {
     Map<String, String> queryParams =
         Map.of(
             "fields", OU_FIELDS,
@@ -47,8 +45,6 @@ public class Dhis2RouteBuilders {
             "paging", "true");
 
     routeDefinition
-        .from("direct:%s".formatted(uri))
-        .routeId(uri)
         .setHeader("CamelDhis2.queryParams", () -> queryParams)
         .to(
             "dhis2://get/collection?path=organisationUnits&itemType=%s&client=#dhis2Client"

@@ -37,10 +37,12 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class LocationRoute extends RouteBuilder {
+  private static final String URI = "get-fhir-locations";
 
   @Override
   public void configure() throws Exception {
-    getOrganisationUnits("get-fhir-locations")
+    getOrganisationUnits(from("direct:%s".formatted(URI)))
+        .routeId(URI)
         .split(body(), new BundleAggregationStrategy())
         .convertBodyTo(Location.class)
         .end()
@@ -50,6 +52,6 @@ public class LocationRoute extends RouteBuilder {
     rest("/")
         .get("/baseR4/Location")
         .produces(MediaType.APPLICATION_JSON_VALUE)
-        .to("direct:get-fhir-locations");
+        .to("direct:%s".formatted(URI));
   }
 }

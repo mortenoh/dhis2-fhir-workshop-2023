@@ -27,6 +27,8 @@
  */
 package com.example.hisp.dhis2.fhir.camel.common;
 
+import java.util.Date;
+import java.util.UUID;
 import org.apache.camel.AggregationStrategy;
 import org.apache.camel.Exchange;
 import org.hl7.fhir.r4.model.Bundle;
@@ -40,6 +42,10 @@ public class BundleAggregationStrategy implements AggregationStrategy {
 
     if (oldExchange == null) {
       Bundle bundle = new Bundle().setType(BundleType.SEARCHSET);
+      bundle.setId(UUID.randomUUID().toString());
+
+      bundle.getMeta().setLastUpdated(new Date());
+
       bundle.addEntry().setResource(resource);
       newExchange.getIn().setBody(bundle);
 
