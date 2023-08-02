@@ -25,47 +25,33 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.example.hisp.dhis2.fhir.camel.common;
+package com.example.hisp.dhis2.fhir.camel.routes;
 
-import java.util.Map;
-import org.apache.camel.model.RouteDefinition;
+import static com.example.hisp.dhis2.fhir.camel.common.Dhis2RouteBuilders.getOptionSets;
 
-public class Dhis2RouteBuilders {
-  private static final String OU_FIELDS =
-      "id,code,name,shortName,description,openingDate,parent[id]";
+import com.example.hisp.dhis2.fhir.camel.common.BundleAggregationStrategy;
+import org.apache.camel.builder.RouteBuilder;
+import org.hl7.fhir.r4.model.CodeSystem;
+import org.springframework.http.MediaType;
+import org.springframework.stereotype.Component;
 
-  private static final String OS_FIELDS = "id,code,name,description,version,options[id,code,name]";
+@Component
+public class CodeSystemRoute extends RouteBuilder {
+  private static final String URI = "get-fhir-code-system";
 
-  private static final String OU_ITEM_TYPE = "org.hisp.dhis.api.model.v2_39_1.OrganisationUnit";
+  @Override
+  public void configure() throws Exception {
+    getOptionSets(from("direct:%s".formatted(URI)))
+        .routeId(URI)
+        .split(body(), new BundleAggregationStrategy())
+        .convertBodyTo(CodeSystem.class)
+        .end()
+        .marshal()
+        .fhirJson("R4");
 
-  private static final String OS_ITEM_TYPE = "org.hisp.dhis.api.model.v2_39_1.OptionSet";
-
-  public static RouteDefinition getOrganisationUnits(RouteDefinition routeDefinition) {
-    Map<String, String> queryParams =
-        Map.of(
-            "fields", OU_FIELDS,
-            "order", "level",
-            "filter", "level:le:2",
-            "paging", "true");
-
-    routeDefinition
-        .setHeader("CamelDhis2.queryParams", () -> queryParams)
-        .to(
-            "dhis2://get/collection?path=organisationUnits&itemType=%s&client=#dhis2Client"
-                .formatted(OU_ITEM_TYPE));
-
-    return routeDefinition;
-  }
-
-  public static RouteDefinition getOptionSets(RouteDefinition routeDefinition) {
-    Map<String, String> queryParams = Map.of("fields", OS_FIELDS, "paging", "true");
-
-    routeDefinition
-        .setHeader("CamelDhis2.queryParams", () -> queryParams)
-        .to(
-            "dhis2://get/collection?path=optionSets&itemType=%s&client=#dhis2Client"
-                .formatted(OS_ITEM_TYPE));
-
-    return routeDefinition;
+    rest("/")
+        .get("/baseR4/CodeSystem")
+        .produces(MediaType.APPLICATION_JSON_VALUE)
+        .to("direct:%s".formatted(URI));
   }
 }

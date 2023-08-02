@@ -25,47 +25,26 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.example.hisp.dhis2.fhir.camel.common;
+package com.example.hisp.dhis2.fhir.camel.converters;
 
-import java.util.Map;
-import org.apache.camel.model.RouteDefinition;
+import com.example.hisp.dhis2.fhir.configuration.MainProperties;
+import lombok.RequiredArgsConstructor;
+import org.apache.camel.Converter;
+import org.apache.camel.Exchange;
+import org.apache.camel.TypeConverters;
+import org.hisp.dhis.api.model.v2_39_1.OptionSet;
+import org.hl7.fhir.r4.model.ValueSet;
+import org.springframework.stereotype.Component;
 
-public class Dhis2RouteBuilders {
-  private static final String OU_FIELDS =
-      "id,code,name,shortName,description,openingDate,parent[id]";
+@Component
+@RequiredArgsConstructor
+public class ValueSetTypeConverter implements TypeConverters {
+  private final MainProperties properties;
 
-  private static final String OS_FIELDS = "id,code,name,description,version,options[id,code,name]";
+  @Converter
+  public ValueSet toValueSet(OptionSet optionSet, Exchange exchange) {
+    ValueSet valueSet = new ValueSet();
 
-  private static final String OU_ITEM_TYPE = "org.hisp.dhis.api.model.v2_39_1.OrganisationUnit";
-
-  private static final String OS_ITEM_TYPE = "org.hisp.dhis.api.model.v2_39_1.OptionSet";
-
-  public static RouteDefinition getOrganisationUnits(RouteDefinition routeDefinition) {
-    Map<String, String> queryParams =
-        Map.of(
-            "fields", OU_FIELDS,
-            "order", "level",
-            "filter", "level:le:2",
-            "paging", "true");
-
-    routeDefinition
-        .setHeader("CamelDhis2.queryParams", () -> queryParams)
-        .to(
-            "dhis2://get/collection?path=organisationUnits&itemType=%s&client=#dhis2Client"
-                .formatted(OU_ITEM_TYPE));
-
-    return routeDefinition;
-  }
-
-  public static RouteDefinition getOptionSets(RouteDefinition routeDefinition) {
-    Map<String, String> queryParams = Map.of("fields", OS_FIELDS, "paging", "true");
-
-    routeDefinition
-        .setHeader("CamelDhis2.queryParams", () -> queryParams)
-        .to(
-            "dhis2://get/collection?path=optionSets&itemType=%s&client=#dhis2Client"
-                .formatted(OS_ITEM_TYPE));
-
-    return routeDefinition;
+    return valueSet;
   }
 }
