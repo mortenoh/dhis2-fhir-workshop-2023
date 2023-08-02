@@ -37,6 +37,8 @@ public class Dhis2RouteBuilders {
   private static final String OS_FIELDS =
       "id,code,name,translations,created,lastUpdated,description,options[id,code,name,translations,created,lastUpdated,description]";
 
+  private static final String TE_FIELDS = "";
+
   private static final String OU_ITEM_TYPE = "org.hisp.dhis.api.model.v2_39_1.OrganisationUnit";
 
   private static final String OS_ITEM_TYPE = "org.hisp.dhis.api.model.v2_39_1.OptionSet";

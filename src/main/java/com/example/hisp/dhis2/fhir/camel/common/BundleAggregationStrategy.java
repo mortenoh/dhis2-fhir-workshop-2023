@@ -31,6 +31,7 @@ import java.util.Date;
 import java.util.UUID;
 import org.apache.camel.AggregationStrategy;
 import org.apache.camel.Exchange;
+import org.apache.camel.component.fhir.internal.FhirConstants;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleType;
 import org.hl7.fhir.r4.model.Resource;
@@ -48,13 +49,16 @@ public class BundleAggregationStrategy implements AggregationStrategy {
 
       bundle.addEntry().setResource(resource);
       newExchange.getIn().setBody(bundle);
+      newExchange.getIn().setHeader(FhirConstants.PROPERTY_PREFIX + "bundle", bundle);
 
-      return newExchange;
     } else {
       Bundle bundle = oldExchange.getIn().getBody(Bundle.class);
       bundle.addEntry().setResource(resource);
+      oldExchange.getIn().setHeader(FhirConstants.PROPERTY_PREFIX + "bundle", bundle);
 
       return oldExchange;
     }
+
+    return null;
   }
 }
