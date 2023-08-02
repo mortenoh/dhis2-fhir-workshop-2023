@@ -50,12 +50,12 @@ public class ValueSetTypeConverter implements TypeConverters {
     ValueSet valueSet = new ValueSet();
     valueSet.setId(optionSet.getId().get());
     valueSet.getMeta().setLastUpdated(optionSet.getLastUpdated().get());
-    valueSet.setUrl(namespace + "/" + optionSet.getId() + "/valueSet");
+    valueSet.setUrl(namespace + "/" + optionSet.getId().get() + "/valueSet");
     valueSet.setName(optionSet.getName().get());
     valueSet.setTitle(optionSet.getName().get());
     // valueSet.setDescription( optionSet.getDescription() );
     valueSet.setStatus(Enumerations.PublicationStatus.ACTIVE);
-    valueSet.setVersion(String.valueOf(optionSet.getVersion()));
+    valueSet.setVersion(String.valueOf(optionSet.getVersion().get()));
     valueSet.setExperimental(false);
     valueSet.setImmutable(true);
 
