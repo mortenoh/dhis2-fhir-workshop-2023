@@ -52,6 +52,9 @@ public class LocationRoute extends RouteBuilder {
     rest("/")
         .get("/baseR4/Location")
         .produces(MediaType.APPLICATION_JSON_VALUE)
+        .to("direct:%s".formatted(URI))
+        .get("/baseR4/Location/{id}")
+        .produces(MediaType.APPLICATION_JSON_VALUE)
         .to("direct:%s".formatted(URI));
   }
 }
