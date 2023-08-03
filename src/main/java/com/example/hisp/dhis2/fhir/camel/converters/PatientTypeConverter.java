@@ -28,14 +28,14 @@
 package com.example.hisp.dhis2.fhir.camel.converters;
 
 import com.example.hisp.dhis2.fhir.configuration.MainProperties;
-import java.util.List;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.apache.camel.Converter;
 import org.apache.camel.Exchange;
 import org.apache.camel.TypeConverters;
 import org.hisp.dhis.api.model.v2_39_1.TrackedEntityInstance;
+import org.hl7.fhir.r4.model.Identifier;
 import org.hl7.fhir.r4.model.Patient;
+import org.hl7.fhir.r4.model.Reference;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -45,9 +45,16 @@ public class PatientTypeConverter implements TypeConverters {
 
   @Converter
   public Patient toPatient(TrackedEntityInstance te, Exchange exchange) {
+    String namespace = properties.getDhis2().getBaseUrl() + "/api/trackedEntityInstances";
+
     Patient patient = new Patient();
-    patient.setId(UUID.randomUUID().toString());
-    patient.addName().setFamily("X").setGiven(List.of());
+    patient.setId(te.getTrackedEntityInstance());
+
+    patient
+        .getIdentifier()
+        .add(new Identifier().setSystem(namespace).setValue(te.getTrackedEntityInstance()));
+
+    patient.setManagingOrganization(new Reference("Organization?identifier=" + te.getOrgUnit()));
 
     return patient;
   }
