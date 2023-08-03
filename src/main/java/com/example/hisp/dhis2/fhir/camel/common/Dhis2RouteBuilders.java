@@ -85,9 +85,7 @@ public class Dhis2RouteBuilders {
 
     routeDefinition
         .setHeader("CamelDhis2.queryParams", () -> queryParams)
-        .to(
-            "dhis2://get/collection?path=trackedEntityInstances&itemType=%s&client=#dhis2Client"
-                .formatted(TE_ITEM_TYPE));
+        .to("dhis2://get/resource?path=trackedEntityInstances&client=#dhis2Client");
 
     return routeDefinition;
   }

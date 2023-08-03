@@ -25,45 +25,18 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.example.hisp.dhis2.fhir.camel.routes;
+package com.example.hisp.dhis2.fhir;
 
-import static com.example.hisp.dhis2.fhir.camel.common.Dhis2RouteBuilders.getTrackedEntities;
-
-import com.example.hisp.dhis2.fhir.camel.common.BundleAggregationStrategy;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.RequiredArgsConstructor;
-import org.apache.camel.builder.RouteBuilder;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.ArrayList;
+import java.util.List;
+import lombok.Data;
 import org.hisp.dhis.api.model.v2_39_1.TrackedEntityInstance;
-import org.hl7.fhir.r4.model.Patient;
-import org.springframework.http.MediaType;
-import org.springframework.stereotype.Component;
 
-@Component
-@RequiredArgsConstructor
-public class PatientRoute extends RouteBuilder {
-  private static final String URI = "get-fhir-patient";
-
-  private final ObjectMapper objectMapper;
-
-  @Override
-  public void configure() throws Exception {
-    getTrackedEntities(from("direct:%s".formatted(URI)))
-        .routeId(URI)
-        .split(jsonpath("$.trackedEntityInstances"), new BundleAggregationStrategy())
-        .process(
-            x -> {
-              TrackedEntityInstance trackedEntityInstance =
-                  objectMapper.convertValue(x.getIn().getBody(), TrackedEntityInstance.class);
-              x.getMessage().setBody(trackedEntityInstance);
-            })
-        .convertBodyTo(Patient.class)
-        .end()
-        .marshal()
-        .fhirJson("R4");
-
-    rest("/")
-        .get("/baseR4/Patient")
-        .produces(MediaType.APPLICATION_JSON_VALUE)
-        .to("direct:%s".formatted(URI));
-  }
+@Data
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class TrackedEntities {
+  @JsonProperty("trackedEntityInstances")
+  private List<TrackedEntityInstance> trackedEntities = new ArrayList<>();
 }

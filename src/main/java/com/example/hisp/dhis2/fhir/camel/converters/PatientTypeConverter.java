@@ -28,6 +28,8 @@
 package com.example.hisp.dhis2.fhir.camel.converters;
 
 import com.example.hisp.dhis2.fhir.configuration.MainProperties;
+import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.apache.camel.Converter;
 import org.apache.camel.Exchange;
@@ -44,6 +46,8 @@ public class PatientTypeConverter implements TypeConverters {
   @Converter
   public Patient toPatient(TrackedEntityInstance te, Exchange exchange) {
     Patient patient = new Patient();
+    patient.setId(UUID.randomUUID().toString());
+    patient.addName().setFamily("X").setGiven(List.of());
 
     return patient;
   }
