@@ -28,11 +28,19 @@
 package com.example.hisp.dhis2.fhir.camel.converters;
 
 import com.example.hisp.dhis2.fhir.configuration.MainProperties;
+import java.util.HashMap;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.apache.camel.Converter;
 import org.apache.camel.Exchange;
 import org.apache.camel.TypeConverters;
+import org.hisp.dhis.api.model.v2_39_1.Attribute__1;
+import org.hisp.dhis.api.model.v2_39_1.DataValue__2;
+import org.hisp.dhis.api.model.v2_39_1.Enrollment;
+import org.hisp.dhis.api.model.v2_39_1.Event;
 import org.hisp.dhis.api.model.v2_39_1.TrackedEntityInstance;
+import org.hl7.fhir.r4.model.Enumerations;
+import org.hl7.fhir.r4.model.HumanName;
 import org.hl7.fhir.r4.model.Identifier;
 import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.Reference;
@@ -45,6 +53,8 @@ public class PatientTypeConverter implements TypeConverters {
 
   @Converter
   public Patient toPatient(TrackedEntityInstance te, Exchange exchange) {
+    Map<String, String> teData = getPatientData(te);
+
     String namespace = properties.getDhis2().getBaseUrl() + "/api/trackedEntityInstances";
 
     Patient patient = new Patient();
@@ -56,6 +66,61 @@ public class PatientTypeConverter implements TypeConverters {
 
     patient.setManagingOrganization(new Reference("Organization?identifier=" + te.getOrgUnit()));
 
+    String gender = teData.get("cejWyOfXge6");
+    String firstName = teData.get("w75KJ2mc4zz");
+    String lastName = teData.get("zDhUuAYrxNC");
+
+    patient.setGender(getGender(gender));
+    patient.getName().add(new HumanName().addGiven(firstName).setFamily(lastName));
+
     return patient;
+  }
+
+  private Enumerations.AdministrativeGender getGender(String gender) {
+    if (gender == null) {
+      return Enumerations.AdministrativeGender.UNKNOWN;
+    }
+
+    return switch (gender) {
+      case "Female" -> Enumerations.AdministrativeGender.FEMALE;
+      case "Male" -> Enumerations.AdministrativeGender.MALE;
+      default -> Enumerations.AdministrativeGender.UNKNOWN;
+    };
+  }
+
+  private Map<String, String> getPatientData(TrackedEntityInstance te) {
+    Map<String, String> data = new HashMap<>();
+
+    te.getAttributes()
+        .ifPresent(
+            attributes -> {
+              for (Attribute__1 attribute : attributes) {
+                data.put(attribute.getAttribute().get(), attribute.getValue().get());
+              }
+            });
+
+    te.getEnrollments()
+        .ifPresent(
+            en -> {
+              for (Enrollment enrollment : en) {
+                enrollment
+                    .getEvents()
+                    .ifPresent(
+                        e -> {
+                          for (Event event : e) {
+                            event
+                                .getDataValues()
+                                .ifPresent(
+                                    dv -> {
+                                      for (DataValue__2 v : dv) {
+                                        data.put(v.getDataElement().get(), v.getValue().get());
+                                      }
+                                    });
+                          }
+                        });
+              }
+            });
+
+    return data;
   }
 }
