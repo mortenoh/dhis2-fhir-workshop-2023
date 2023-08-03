@@ -1,6 +1,6 @@
 integration:
   dhis2:
-    base-url: http://localhost:8080/api
+    base-url: https://play.dhis2.org/40.0.1/api
     username: admin
     password: district
   fhir:
