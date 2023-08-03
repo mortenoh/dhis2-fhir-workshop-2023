@@ -27,30 +27,30 @@
  */
 package com.example.hisp.dhis2.fhir.camel.routes;
 
-import static com.example.hisp.dhis2.fhir.camel.common.Dhis2RouteBuilders.getOptionSets;
+import static com.example.hisp.dhis2.fhir.camel.common.Dhis2RouteBuilders.getTrackedEntities;
 
 import com.example.hisp.dhis2.fhir.camel.common.BundleAggregationStrategy;
 import org.apache.camel.builder.RouteBuilder;
-import org.hl7.fhir.r4.model.CodeSystem;
+import org.hl7.fhir.r4.model.Patient;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 
 @Component
-public class CodeSystemRoute extends RouteBuilder {
-  private static final String URI = "get-fhir-code-system";
+public class PatientRoute extends RouteBuilder {
+  private static final String URI = "get-fhir-patient";
 
   @Override
   public void configure() throws Exception {
-    getOptionSets(from("direct:%s".formatted(URI)))
+    getTrackedEntities(from("direct:%s".formatted(URI)))
         .routeId(URI)
         .split(body(), new BundleAggregationStrategy())
-        .convertBodyTo(CodeSystem.class)
+        .convertBodyTo(Patient.class)
         .end()
         .marshal()
         .fhirJson("R4");
 
     rest("/")
-        .get("/baseR4/CodeSystem")
+        .get("/baseR4/Patient")
         .produces(MediaType.APPLICATION_JSON_VALUE)
         .to("direct:%s".formatted(URI));
   }

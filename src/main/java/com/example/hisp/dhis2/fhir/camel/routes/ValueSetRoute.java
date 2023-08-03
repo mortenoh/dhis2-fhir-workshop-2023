@@ -52,9 +52,6 @@ public class ValueSetRoute extends RouteBuilder {
     rest("/")
         .get("/baseR4/ValueSet")
         .produces(MediaType.APPLICATION_JSON_VALUE)
-        .to("direct:%s".formatted(URI))
-        .get("/baseR4/ValueSet/{id}")
-        .produces(MediaType.APPLICATION_JSON_VALUE)
         .to("direct:%s".formatted(URI));
   }
 }

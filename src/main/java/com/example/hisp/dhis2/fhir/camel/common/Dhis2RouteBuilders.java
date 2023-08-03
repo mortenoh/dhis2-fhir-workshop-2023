@@ -37,11 +37,14 @@ public class Dhis2RouteBuilders {
   private static final String OS_FIELDS =
       "id,code,name,translations,created,lastUpdated,description,options[id,code,name,translations,created,lastUpdated,description]";
 
-  private static final String TE_FIELDS = "";
+  private static final String TE_FIELDS = "*,enrollments[*,events[*]]";
 
   private static final String OU_ITEM_TYPE = "org.hisp.dhis.api.model.v2_39_1.OrganisationUnit";
 
   private static final String OS_ITEM_TYPE = "org.hisp.dhis.api.model.v2_39_1.OptionSet";
+
+  private static final String TE_ITEM_TYPE =
+      "org.hisp.dhis.api.model.v2_39_1.TrackedEntityInstance";
 
   public static RouteDefinition getOrganisationUnits(RouteDefinition routeDefinition) {
     Map<String, String> queryParams =
@@ -54,7 +57,7 @@ public class Dhis2RouteBuilders {
     routeDefinition
         .setHeader("CamelDhis2.queryParams", () -> queryParams)
         .to(
-            "dhis2://get/collection?path=organisationUnits&itemType=%s&client=#dhis2Client"
+            "dhis2://get/collection?path=organisationUnits&itemType=org.hisp.dhis.api.model.v2_39_1.OrganisationUnit&client=#dhis2Client"
                 .formatted(OU_ITEM_TYPE));
 
     return routeDefinition;
@@ -68,6 +71,23 @@ public class Dhis2RouteBuilders {
         .to(
             "dhis2://get/collection?path=optionSets&itemType=%s&client=#dhis2Client"
                 .formatted(OS_ITEM_TYPE));
+
+    return routeDefinition;
+  }
+
+  public static RouteDefinition getTrackedEntities(RouteDefinition routeDefinition) {
+    Map<String, String> queryParams =
+        Map.of(
+            "fields", TE_FIELDS,
+            "program", "IpHINAT79UW",
+            "ouMode", "ACCESSIBLE",
+            "skipPaging", "false");
+
+    routeDefinition
+        .setHeader("CamelDhis2.queryParams", () -> queryParams)
+        .to(
+            "dhis2://get/collection?path=trackedEntityInstances&itemType=%s&client=#dhis2Client"
+                .formatted(TE_ITEM_TYPE));
 
     return routeDefinition;
   }

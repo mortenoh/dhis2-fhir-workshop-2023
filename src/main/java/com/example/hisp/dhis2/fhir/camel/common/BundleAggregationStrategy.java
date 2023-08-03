@@ -44,21 +44,23 @@ public class BundleAggregationStrategy implements AggregationStrategy {
     if (oldExchange == null) {
       Bundle bundle = new Bundle().setType(BundleType.SEARCHSET);
       bundle.setId(UUID.randomUUID().toString());
-
       bundle.getMeta().setLastUpdated(new Date());
 
       bundle.addEntry().setResource(resource);
+
       newExchange.getIn().setBody(bundle);
       newExchange.getIn().setHeader(FhirConstants.PROPERTY_PREFIX + "bundle", bundle);
 
+      return newExchange;
     } else {
       Bundle bundle = oldExchange.getIn().getBody(Bundle.class);
+      bundle.setId(UUID.randomUUID().toString());
+      bundle.getMeta().setLastUpdated(new Date());
+
       bundle.addEntry().setResource(resource);
       oldExchange.getIn().setHeader(FhirConstants.PROPERTY_PREFIX + "bundle", bundle);
 
       return oldExchange;
     }
-
-    return null;
   }
 }

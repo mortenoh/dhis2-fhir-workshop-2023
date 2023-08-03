@@ -47,6 +47,7 @@ public class LocationTypeConverter implements TypeConverters {
   @Converter
   public Location toLocation(OrganisationUnit ou, Exchange exchange) {
     Location location = new Location();
+
     location.setId(ou.getId().get());
     location.setName(ou.getName().get());
 

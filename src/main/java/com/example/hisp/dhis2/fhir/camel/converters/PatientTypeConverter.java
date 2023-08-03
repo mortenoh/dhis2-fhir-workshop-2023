@@ -25,33 +25,26 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.example.hisp.dhis2.fhir.camel.routes;
+package com.example.hisp.dhis2.fhir.camel.converters;
 
-import static com.example.hisp.dhis2.fhir.camel.common.Dhis2RouteBuilders.getOptionSets;
-
-import com.example.hisp.dhis2.fhir.camel.common.BundleAggregationStrategy;
-import org.apache.camel.builder.RouteBuilder;
-import org.hl7.fhir.r4.model.CodeSystem;
-import org.springframework.http.MediaType;
+import com.example.hisp.dhis2.fhir.configuration.MainProperties;
+import lombok.RequiredArgsConstructor;
+import org.apache.camel.Converter;
+import org.apache.camel.Exchange;
+import org.apache.camel.TypeConverters;
+import org.hisp.dhis.api.model.v2_39_1.TrackedEntityInstance;
+import org.hl7.fhir.r4.model.Patient;
 import org.springframework.stereotype.Component;
 
 @Component
-public class CodeSystemRoute extends RouteBuilder {
-  private static final String URI = "get-fhir-code-system";
+@RequiredArgsConstructor
+public class PatientTypeConverter implements TypeConverters {
+  private final MainProperties properties;
 
-  @Override
-  public void configure() throws Exception {
-    getOptionSets(from("direct:%s".formatted(URI)))
-        .routeId(URI)
-        .split(body(), new BundleAggregationStrategy())
-        .convertBodyTo(CodeSystem.class)
-        .end()
-        .marshal()
-        .fhirJson("R4");
+  @Converter
+  public Patient toPatient(TrackedEntityInstance te, Exchange exchange) {
+    Patient patient = new Patient();
 
-    rest("/")
-        .get("/baseR4/CodeSystem")
-        .produces(MediaType.APPLICATION_JSON_VALUE)
-        .to("direct:%s".formatted(URI));
+    return patient;
   }
 }
