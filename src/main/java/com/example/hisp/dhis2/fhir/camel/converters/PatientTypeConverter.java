@@ -28,6 +28,9 @@
 package com.example.hisp.dhis2.fhir.camel.converters;
 
 import com.example.hisp.dhis2.fhir.configuration.MainProperties;
+import java.sql.Date;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -63,6 +66,12 @@ public class PatientTypeConverter implements TypeConverters {
     patient
         .getIdentifier()
         .add(new Identifier().setSystem(namespace).setValue(te.getTrackedEntityInstance()));
+
+    // which TZ?
+    patient
+        .getMeta()
+        .setLastUpdated(
+            Date.from(LocalDateTime.parse(te.getLastUpdated()).toInstant(ZoneOffset.UTC)));
 
     patient.setManagingOrganization(new Reference("Organization?identifier=" + te.getOrgUnit()));
 
