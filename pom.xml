@@ -10,7 +10,7 @@
   </parent>
 
   <groupId>com.example.dhis2</groupId>
-  <artifactId>fhir</artifactId>
+  <artifactId>dhis2-fhir-workshop-2023</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <name>dhis2-fhir-workshop-2023</name>
   <description>dhis2-fhir-workshop-2023</description>
