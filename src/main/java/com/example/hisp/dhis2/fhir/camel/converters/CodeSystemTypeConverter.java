@@ -34,7 +34,9 @@ import org.apache.camel.Exchange;
 import org.apache.camel.TypeConverters;
 import org.hisp.dhis.api.model.v2_39_1.Option;
 import org.hisp.dhis.api.model.v2_39_1.OptionSet;
+import org.hisp.dhis.api.model.v2_39_1.Translation;
 import org.hl7.fhir.r4.model.CodeSystem;
+import org.hl7.fhir.r4.model.CodeSystem.ConceptDefinitionComponent;
 import org.hl7.fhir.r4.model.Enumerations;
 import org.hl7.fhir.r4.model.Identifier;
 import org.springframework.stereotype.Component;
@@ -83,11 +85,24 @@ public class CodeSystemTypeConverter implements TypeConverters {
     }
 
     for (Option option : optionSet.getOptions().get()) {
-      codeSystem
-          .addConcept()
-          .setDisplay(option.getName().get())
-          .setDefinition(option.getName().get())
-          .setCode(option.getCode().get());
+      ConceptDefinitionComponent conceptDefinitionComponent =
+          codeSystem
+              .addConcept()
+              .setDisplay(option.getName().get())
+              .setDefinition(option.getName().get())
+              .setCode(option.getCode().get());
+
+      option
+          .getTranslations()
+          .ifPresent(
+              translations -> {
+                for (Translation translation : translations) {
+                  conceptDefinitionComponent
+                      .addDesignation()
+                      .setLanguage(translation.getLocale().get())
+                      .setValue(translation.getValue().get());
+                }
+              });
     }
 
     return codeSystem;
