@@ -77,7 +77,7 @@ public class ValueSetTypeConverter implements TypeConverters {
         new ValueSet.ValueSetComposeComponent()
             .addInclude(
                 new ValueSet.ConceptSetComponent()
-                    .setSystem(namespace + "/" + optionSet.getId() + "/codeSystem")));
+                    .setSystem(namespace + "/" + optionSet.getId().get() + "/codeSystem")));
 
     return valueSet;
   }

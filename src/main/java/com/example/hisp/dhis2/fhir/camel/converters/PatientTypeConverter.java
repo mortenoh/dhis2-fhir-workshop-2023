@@ -42,8 +42,14 @@ import org.hisp.dhis.api.model.v2_39_1.DataValue__2;
 import org.hisp.dhis.api.model.v2_39_1.Enrollment;
 import org.hisp.dhis.api.model.v2_39_1.Event;
 import org.hisp.dhis.api.model.v2_39_1.TrackedEntityInstance;
+import org.hl7.fhir.r4.model.Address;
+import org.hl7.fhir.r4.model.Address.AddressType;
+import org.hl7.fhir.r4.model.Address.AddressUse;
+import org.hl7.fhir.r4.model.BooleanType;
+import org.hl7.fhir.r4.model.CodeableConcept;
+import org.hl7.fhir.r4.model.ContactPoint.ContactPointSystem;
 import org.hl7.fhir.r4.model.Enumerations;
-import org.hl7.fhir.r4.model.HumanName;
+import org.hl7.fhir.r4.model.Enumerations.AdministrativeGender;
 import org.hl7.fhir.r4.model.Identifier;
 import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.Reference;
@@ -71,16 +77,60 @@ public class PatientTypeConverter implements TypeConverters {
     patient
         .getMeta()
         .setLastUpdated(
-            Date.from(LocalDateTime.parse(te.getLastUpdated()).toInstant(ZoneOffset.UTC)));
+            Date.from(LocalDateTime.parse(te.getLastUpdated()).toInstant(ZoneOffset.UTC)))
+        .addProfile("http://example.com/fhir/example/StructureDefinition/DHIS2BasePatient");
 
     patient.setManagingOrganization(new Reference("Organization?identifier=" + te.getOrgUnit()));
 
+    patient.addExtension(
+        "http://hl7.org/fhir/StructureDefinition/patient-birthPlace",
+        new Address().setCountry("NO"));
+
+    patient.addExtension(
+        "http://example.com/fhir/example/StructureDefinition/ConsentToBeContacted",
+        new BooleanType(true));
+
+    CodeableConcept codeableConcept = new CodeableConcept();
+    codeableConcept
+        .addCoding()
+        .setSystem("http://dhis2.org/identifiertypes")
+        .setCode("nationalidentifier");
+
+    patient.addIdentifier(
+        new Identifier()
+            .setType(codeableConcept)
+            .setSystem("http://whatever.country/nationalidnamespace")
+            .setValue("1234234245"));
+
+    patient.addName().setFamily("Hansen").addGiven("Morten");
+
+    patient.setGender(AdministrativeGender.MALE);
+
+    patient.setBirthDate(
+        Date.from(LocalDateTime.parse("1981-03-20T00:00:00").toInstant(ZoneOffset.UTC)));
+
+    patient
+        .getBirthDateElement()
+        .addExtension(
+            "http://example.com/fhir/example/StructureDefinition/DateOfBirthIsEstimated",
+            new BooleanType(false));
+
+    patient
+        .addAddress()
+        .setUse(AddressUse.HOME)
+        .setType(AddressType.PHYSICAL)
+        .setText("Vietnamgate 123, Oslo");
+
+    patient.addContact().addTelecom().setSystem(ContactPointSystem.PHONE).setValue("1234567");
+
+    /*
     String gender = teData.get("cejWyOfXge6");
     String firstName = teData.get("w75KJ2mc4zz");
     String lastName = teData.get("zDhUuAYrxNC");
 
     patient.setGender(getGender(gender));
     patient.getName().add(new HumanName().addGiven(firstName).setFamily(lastName));
+     */
 
     return patient;
   }

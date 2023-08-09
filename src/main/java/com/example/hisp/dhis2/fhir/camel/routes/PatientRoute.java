@@ -47,7 +47,7 @@ public class PatientRoute extends RouteBuilder {
 
   @Override
   public void configure() throws Exception {
-    getTrackedEntities(from("direct:%s".formatted(URI)))
+    getTrackedEntities(from("direct:%s".formatted(URI)), "Xh88p1nyefp")
         .routeId(URI)
         .split(jsonpath("$.trackedEntityInstances"), new BundleAggregationStrategy())
         .process(

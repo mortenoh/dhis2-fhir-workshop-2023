@@ -64,7 +64,8 @@ public class Dhis2RouteBuilders {
   }
 
   public static RouteDefinition getOptionSets(RouteDefinition routeDefinition) {
-    Map<String, String> queryParams = Map.of("fields", OS_FIELDS, "paging", "true");
+    Map<String, String> queryParams =
+        Map.of("fields", OS_FIELDS, "paging", "true", "filter", "id:eq:P0RAq93jsi9");
 
     routeDefinition
         .setHeader("CamelDhis2.queryParams", () -> queryParams)
@@ -75,13 +76,11 @@ public class Dhis2RouteBuilders {
     return routeDefinition;
   }
 
-  public static RouteDefinition getTrackedEntities(RouteDefinition routeDefinition) {
+  public static RouteDefinition getTrackedEntities(
+      RouteDefinition routeDefinition, String program) {
     Map<String, String> queryParams =
         Map.of(
-            "fields", TE_FIELDS,
-            "program", "IpHINAT79UW",
-            "ouMode", "ACCESSIBLE",
-            "skipPaging", "false");
+            "fields", TE_FIELDS, "program", program, "ouMode", "ACCESSIBLE", "skipPaging", "false");
 
     routeDefinition
         .setHeader("CamelDhis2.queryParams", () -> queryParams)
