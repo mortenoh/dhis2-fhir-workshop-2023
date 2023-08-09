@@ -100,6 +100,10 @@ public class CodeSystemTypeConverter implements TypeConverters {
           .ifPresent(
               translations -> {
                 for (Translation translation : translations) {
+                  if (!translation.getProperty().get().equals("NAME")) {
+                    continue;
+                  }
+
                   conceptDefinitionComponent
                       .addDesignation()
                       .setLanguage(translation.getLocale().get())

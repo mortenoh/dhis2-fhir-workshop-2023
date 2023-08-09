@@ -95,6 +95,10 @@ public class ValueSetTypeConverter implements TypeConverters {
         .ifPresent(
             translations -> {
               for (Translation translation : translations) {
+                if (!translation.getProperty().get().equals("NAME")) {
+                  continue;
+                }
+
                 Extension extension =
                     valueSet
                         .addExtension()
