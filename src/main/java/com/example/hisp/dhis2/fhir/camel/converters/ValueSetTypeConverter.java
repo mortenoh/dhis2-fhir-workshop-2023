@@ -33,8 +33,12 @@ import org.apache.camel.Converter;
 import org.apache.camel.Exchange;
 import org.apache.camel.TypeConverters;
 import org.hisp.dhis.api.model.v2_39_1.OptionSet;
+import org.hisp.dhis.api.model.v2_39_1.Translation;
+import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.Enumerations;
+import org.hl7.fhir.r4.model.Extension;
 import org.hl7.fhir.r4.model.Identifier;
+import org.hl7.fhir.r4.model.StringType;
 import org.hl7.fhir.r4.model.ValueSet;
 import org.springframework.stereotype.Component;
 
@@ -84,6 +88,33 @@ public class ValueSetTypeConverter implements TypeConverters {
             .addInclude(
                 new ValueSet.ConceptSetComponent()
                     .setSystem(namespace + "/" + optionSet.getId().get() + "/CodeSystem")));
+
+    // Title translations
+    optionSet
+        .getTranslations()
+        .ifPresent(
+            translations -> {
+              for (Translation translation : translations) {
+                Extension extension =
+                    valueSet
+                        .addExtension()
+                        .setUrl("http://hl7.org/fhir/StructureDefinition/translation");
+
+                extension
+                    .addExtension()
+                    .setUrl("lang")
+                    .setValue(
+                        new Coding(
+                            "urn:iso:std:iso:3166",
+                            translation.getLocale().get(),
+                            translation.getLocale().get()));
+
+                extension
+                    .addExtension()
+                    .setUrl("content")
+                    .setValue(new StringType(translation.getValue().get()));
+              }
+            });
 
     return valueSet;
   }
