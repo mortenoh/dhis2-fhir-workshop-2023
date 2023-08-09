@@ -37,7 +37,7 @@ import org.hisp.dhis.api.model.v2_39_1.OptionSet;
 import org.hisp.dhis.api.model.v2_39_1.Translation;
 import org.hl7.fhir.r4.model.CodeSystem;
 import org.hl7.fhir.r4.model.CodeSystem.ConceptDefinitionComponent;
-import org.hl7.fhir.r4.model.Coding;
+import org.hl7.fhir.r4.model.CodeType;
 import org.hl7.fhir.r4.model.Enumerations;
 import org.hl7.fhir.r4.model.Extension;
 import org.hl7.fhir.r4.model.Identifier;
@@ -120,17 +120,14 @@ public class CodeSystemTypeConverter implements TypeConverters {
               for (Translation translation : translations) {
                 Extension extension =
                     codeSystem
+                        .getTitleElement()
                         .addExtension()
                         .setUrl("http://hl7.org/fhir/StructureDefinition/translation");
 
                 extension
                     .addExtension()
                     .setUrl("lang")
-                    .setValue(
-                        new Coding(
-                            "urn:iso:std:iso:3166",
-                            translation.getLocale().get(),
-                            translation.getLocale().get()));
+                    .setValue(new CodeType(translation.getLocale().get()));
 
                 extension
                     .addExtension()
