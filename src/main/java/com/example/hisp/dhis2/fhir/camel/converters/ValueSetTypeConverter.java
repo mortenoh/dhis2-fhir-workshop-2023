@@ -67,7 +67,7 @@ public class ValueSetTypeConverter implements TypeConverters {
         .getIdentifier()
         .add(
             new Identifier()
-                .setSystem("http://dhis2.org/optionSet/id")
+                .setSystem("http://dhis2.org/optionSet/idVS")
                 .setValue(optionSet.getId().get()));
 
     if (optionSet.getCode().isPresent()) {
@@ -75,7 +75,7 @@ public class ValueSetTypeConverter implements TypeConverters {
           .getIdentifier()
           .add(
               new Identifier()
-                  .setSystem("http://dhis2.org/optionSet/code")
+                  .setSystem("http://dhis2.org/optionSet/codeVS")
                   .setValue(optionSet.getCode().get()));
     }
 
