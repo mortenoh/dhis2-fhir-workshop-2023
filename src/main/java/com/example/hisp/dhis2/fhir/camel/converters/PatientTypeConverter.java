@@ -64,7 +64,7 @@ public class PatientTypeConverter implements TypeConverters {
   public Patient toPatient(TrackedEntityInstance te, Exchange exchange) {
     Map<String, String> teData = getPatientData(te);
 
-    String namespace = properties.getDhis2().getBaseUrl() + "/api/trackedEntityInstances";
+    String namespace = properties.getDhis2().getBaseUrl() + "/trackedEntityInstances";
 
     Patient patient = new Patient();
     patient.setId(te.getTrackedEntityInstance());
@@ -84,11 +84,11 @@ public class PatientTypeConverter implements TypeConverters {
 
     patient.addExtension(
         "http://hl7.org/fhir/StructureDefinition/patient-birthPlace",
-        new Address().setCountry("NO"));
+        new Address().setCountry(teData.get("gWTETHreVph")));
 
     patient.addExtension(
         "http://example.com/fhir/example/StructureDefinition/ConsentToBeContacted",
-        new BooleanType(true));
+        new BooleanType(teData.get("YsxExAltfIE")));
 
     CodeableConcept codeableConcept = new CodeableConcept();
     codeableConcept
@@ -96,41 +96,48 @@ public class PatientTypeConverter implements TypeConverters {
         .setSystem("http://dhis2.org/identifiertypes")
         .setCode("nationalidentifier");
 
-    patient.addIdentifier(
-        new Identifier()
-            .setType(codeableConcept)
-            .setSystem("http://whatever.country/nationalidnamespace")
-            .setValue("1234234245"));
+    if (teData.containsKey("Ewi7FUfcHAD")) {
+      patient.addIdentifier(
+          new Identifier()
+              .setType(codeableConcept)
+              .setSystem("http://whatever.country/nationalidnamespace")
+              .setValue(teData.get("Ewi7FUfcHAD")));
+    }
 
-    patient.addName().setFamily("Hansen").addGiven("Morten");
+    patient.addName().setFamily(teData.get("ENRjVGxVL6l")).addGiven(teData.get("sB1IHYu2xQT"));
 
-    patient.setGender(AdministrativeGender.MALE);
+    patient.setGender(getGender(teData.get("Jt68iauILtD")));
 
-    patient.setBirthDate(
-        Date.from(LocalDateTime.parse("1981-03-20T00:00:00").toInstant(ZoneOffset.UTC)));
+    if (teData.containsKey("NI0QRzJvQ0k")) {
+      patient.setBirthDate(
+          Date.from(
+              LocalDateTime.parse(teData.get("NI0QRzJvQ0k") + "T00:00:00")
+                  .toInstant(ZoneOffset.UTC)));
+    }
 
-    patient
-        .getBirthDateElement()
-        .addExtension(
-            "http://example.com/fhir/example/StructureDefinition/DateOfBirthIsEstimated",
-            new BooleanType(false));
+    if (teData.containsKey("Z1rLc1rVHK8")) {
+      patient
+          .getBirthDateElement()
+          .addExtension(
+              "http://example.com/fhir/example/StructureDefinition/DateOfBirthIsEstimated",
+              new BooleanType(teData.get("Z1rLc1rVHK8")));
+    }
 
-    patient
-        .addAddress()
-        .setUse(AddressUse.HOME)
-        .setType(AddressType.PHYSICAL)
-        .setText("Vietnamgate 123, Oslo");
+    if (teData.containsKey("Xhdn49gUd52")) {
+      patient
+          .addAddress()
+          .setUse(AddressUse.HOME)
+          .setType(AddressType.PHYSICAL)
+          .setText(teData.get("Xhdn49gUd52"));
+    }
 
-    patient.addContact().addTelecom().setSystem(ContactPointSystem.PHONE).setValue("1234567");
-
-    /*
-    String gender = teData.get("cejWyOfXge6");
-    String firstName = teData.get("w75KJ2mc4zz");
-    String lastName = teData.get("zDhUuAYrxNC");
-
-    patient.setGender(getGender(gender));
-    patient.getName().add(new HumanName().addGiven(firstName).setFamily(lastName));
-     */
+    if (teData.containsKey("fctSQp5nAYl")) {
+      patient
+          .addContact()
+          .addTelecom()
+          .setSystem(ContactPointSystem.PHONE)
+          .setValue(teData.get("fctSQp5nAYl"));
+    }
 
     return patient;
   }
@@ -141,8 +148,9 @@ public class PatientTypeConverter implements TypeConverters {
     }
 
     return switch (gender) {
-      case "Female" -> Enumerations.AdministrativeGender.FEMALE;
-      case "Male" -> Enumerations.AdministrativeGender.MALE;
+      case "FEMALE" -> Enumerations.AdministrativeGender.FEMALE;
+      case "MALE" -> Enumerations.AdministrativeGender.MALE;
+      case "TG", "OTHER" -> AdministrativeGender.OTHER;
       default -> Enumerations.AdministrativeGender.UNKNOWN;
     };
   }

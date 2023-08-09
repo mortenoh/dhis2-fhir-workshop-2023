@@ -45,13 +45,13 @@ public class ValueSetTypeConverter implements TypeConverters {
 
   @Converter
   public ValueSet toValueSet(OptionSet optionSet, Exchange exchange) {
-    String namespace = properties.getDhis2().getBaseUrl() + "/api/optionSets";
+    String namespace = properties.getDhis2().getBaseUrl() + "/optionSets";
 
     ValueSet valueSet = new ValueSet();
     valueSet.setId(optionSet.getId().get());
     valueSet.getMeta().setLastUpdated(optionSet.getLastUpdated().get());
-    valueSet.setUrl(namespace + "/" + optionSet.getId().get() + "/valueSet");
-    valueSet.setName(optionSet.getName().get());
+    valueSet.setUrl(namespace + "/" + optionSet.getId().get() + "/ValueSet");
+    valueSet.setName("OptionSet_" + optionSet.getId().get());
     valueSet.setTitle(optionSet.getName().get());
     // valueSet.setDescription( optionSet.getDescription() );
     valueSet.setStatus(Enumerations.PublicationStatus.ACTIVE);
@@ -65,19 +65,25 @@ public class ValueSetTypeConverter implements TypeConverters {
 
     valueSet
         .getIdentifier()
-        .add(new Identifier().setSystem(namespace).setValue(optionSet.getId().get()));
+        .add(
+            new Identifier()
+                .setSystem("http://dhis2.org/optionSet/id")
+                .setValue(optionSet.getId().get()));
 
     if (optionSet.getCode().isPresent()) {
       valueSet
           .getIdentifier()
-          .add(new Identifier().setSystem(namespace).setValue(optionSet.getCode().get()));
+          .add(
+              new Identifier()
+                  .setSystem("http://dhis2.org/optionSet/code")
+                  .setValue(optionSet.getCode().get()));
     }
 
     valueSet.setCompose(
         new ValueSet.ValueSetComposeComponent()
             .addInclude(
                 new ValueSet.ConceptSetComponent()
-                    .setSystem(namespace + "/" + optionSet.getId().get() + "/codeSystem")));
+                    .setSystem(namespace + "/" + optionSet.getId().get() + "/CodeSystem")));
 
     return valueSet;
   }

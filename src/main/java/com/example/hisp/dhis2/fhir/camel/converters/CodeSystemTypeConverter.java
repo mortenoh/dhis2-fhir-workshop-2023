@@ -46,14 +46,14 @@ public class CodeSystemTypeConverter implements TypeConverters {
 
   @Converter
   public CodeSystem toCodeSystem(OptionSet optionSet, Exchange exchange) {
-    String namespace = properties.getDhis2().getBaseUrl() + "/api/optionSets";
+    String namespace = properties.getDhis2().getBaseUrl() + "/" + "optionSets";
 
     CodeSystem codeSystem = new CodeSystem();
     codeSystem.setId(optionSet.getId().get());
     codeSystem.getMeta().setLastUpdated(optionSet.getLastUpdated().get());
-    codeSystem.setUrl(namespace + "/" + optionSet.getId().get() + "/codeSystem");
-    codeSystem.setValueSet(namespace + "/" + optionSet.getId().get() + "/valueSet");
-    codeSystem.setName(optionSet.getName().get());
+    codeSystem.setUrl(namespace + "/" + optionSet.getId().get() + "/CodeSystem");
+    codeSystem.setValueSet(namespace + "/" + optionSet.getId().get() + "/ValueSet");
+    codeSystem.setName("OptionSet_" + optionSet.getId().get());
     codeSystem.setTitle(optionSet.getName().get());
     codeSystem.setPublisher(properties.getDhis2().getBaseUrl());
     codeSystem.setStatus(Enumerations.PublicationStatus.ACTIVE);
@@ -68,12 +68,18 @@ public class CodeSystemTypeConverter implements TypeConverters {
 
     codeSystem
         .getIdentifier()
-        .add(new Identifier().setSystem(namespace).setValue(optionSet.getId().get()));
+        .add(
+            new Identifier()
+                .setSystem("http://dhis2.org/optionSet/id")
+                .setValue(optionSet.getId().get()));
 
     if (optionSet.getCode().isPresent()) {
       codeSystem
           .getIdentifier()
-          .add(new Identifier().setSystem(namespace).setValue(optionSet.getCode().get()));
+          .add(
+              new Identifier()
+                  .setSystem("http://dhis2.org/optionSet/code")
+                  .setValue(optionSet.getCode().get()));
     }
 
     for (Option option : optionSet.getOptions().get()) {

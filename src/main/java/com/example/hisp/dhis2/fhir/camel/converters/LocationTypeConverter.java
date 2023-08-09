@@ -51,13 +51,11 @@ public class LocationTypeConverter implements TypeConverters {
     location.setId(ou.getId().get());
     location.setName(ou.getName().get());
 
-    String baseUrl = properties.getDhis2().getBaseUrl().replace("/api", "");
-
     location
         .getIdentifier()
         .add(
             new Identifier()
-                .setSystem(baseUrl + "/api/organisationUnits/id")
+                .setSystem("http://dhis2.org/organisationUnit/id")
                 .setValue(ou.getId().get()));
 
     if (ou.getCode().isPresent()) {
@@ -65,7 +63,7 @@ public class LocationTypeConverter implements TypeConverters {
           .getIdentifier()
           .add(
               new Identifier()
-                  .setSystem(baseUrl + "/api/organisationUnits/code")
+                  .setSystem("http://dhis2.org/organisationUnit/code")
                   .setValue(ou.getCode().get()));
     }
 
@@ -73,7 +71,7 @@ public class LocationTypeConverter implements TypeConverters {
       location.setDescription(ou.getDescription().get());
     }
 
-    // location.getManagingOrganization().setReference("Organization/" + ou.getId().get());
+    location.getManagingOrganization().setReference("Organization/" + ou.getId().get());
     location.setMode(Location.LocationMode.INSTANCE);
 
     if (ou.getParent().isPresent()) {
