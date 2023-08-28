@@ -21,7 +21,7 @@
     <java.version>17</java.version>
     <spotless.version>2.38.0</spotless.version>
     <camel.version>3.21.0</camel.version>
-    <dhis2.version>2.0.1</dhis2.version>
+    <dhis2.version>3.0.0</dhis2.version>
     <jib.version>3.3.2</jib.version>
   </properties>
 
